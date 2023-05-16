@@ -12,36 +12,33 @@ import id.ac.unpas.functionalcompose.persistences.SetoranSampahDao
 import javax.inject.Inject
 
 class SetoranSampahRepository @Inject constructor(
-    private val api: SetoranSampahApi,
-    private val dao: SetoranSampahDao
+    private val api: SetoranSampahApi, private val dao: SetoranSampahDao
 ) : Repository {
     suspend fun loadItems(
-        onSuccess: (List<SetoranSampah>) -> Unit,
-        onError: (List<SetoranSampah>, String) -> Unit
+        onSuccess: (List<SetoranSampah>) -> Unit, onError: (List<SetoranSampah>, String) -> Unit
     ) {
         val list: List<SetoranSampah> = dao.getList()
         api.all()
-        // handle the case when the API request gets a success response.
-        .suspendOnSuccess {
-            data.whatIfNotNull {
-                it.data?.let { list ->
-                    dao.insertAll(list)
-                    val items: List<SetoranSampah> =
-                        dao.getList()
-                    onSuccess(items)
+// handle the case when the API request gets a success response.
+            .suspendOnSuccess {
+                data.whatIfNotNull {
+                    it.data?.let { list ->
+                        dao.insertAll(list)
+                        val items: List<SetoranSampah> = dao.getList()
+                        onSuccess(items)
+                    }
                 }
             }
-        }
-            // handle the case when the API request gets an error response.
-        // e.g. internal server error.
-        .suspendOnError {
-            onError(list, message())
-        }
-         // handle the case when the API request gets an exception response.
-        // e.g. network connection error.
-        .suspendOnException {
-            onError(list, message())
-        }
+// handle the case when the API request gets an error response.
+// e.g. internal server error.
+            .suspendOnError {
+                onError(list, message())
+            }
+// handle the case when the API request gets an exception response.
+// e.g. network connection error.
+            .suspendOnException {
+                onError(list, message())
+            }
     }
 
     suspend fun insert(
@@ -55,69 +52,73 @@ class SetoranSampahRepository @Inject constructor(
         val item = SetoranSampah(id, tanggal, nama, berat)
         dao.insertAll(item)
         api.insert(item)
-        // handle the case when the API request gets a success response.
-        .suspendOnSuccess {
-            onSuccess(item)
-        }
-        // handle the case when the API request gets an error response.
-        // e.g. internal server error.
-        .suspendOnError {
-            onError(item, message())
-        }
-        // handle the case when the API request gets an exception response.
-        // e.g. network connection error.
-        .suspendOnException {
-            onError(item, message())
-        }
+// handle the case when the API request gets a success response.
+            .suspendOnSuccess {
+                onSuccess(item)
+            }
+// handle the case when the API request gets an error response.
+// e.g. internal server error.
+            .suspendOnError {
+                onError(item, message())
+            }
+// handle the case when the API request gets an exception response.
+// e.g. network connection error.
+            .suspendOnException {
+                onError(item, message())
+            }
+    }
 
-        suspend fun update(
+    suspend fun update(
         id: String,
         tanggal: String,
         nama: String,
         berat: String,
         onSuccess: (SetoranSampah) -> Unit,
         onError: (SetoranSampah?, String) -> Unit
-        ) {
-            val item = SetoranSampah(id, tanggal, nama, berat)
-            dao.insertAll(item)
-            api.update(id, item)
-            // handle the case when the API request gets a success response.
+    ) {
+        val item = SetoranSampah(id, tanggal, nama, berat)
+        dao.insertAll(item)
+        api.update(id, item)
+// handle the case when the API request gets a success response.
             .suspendOnSuccess {
                 onSuccess(item)
             }
-            // handle the case when the API request gets an error response.
-            // e.g. internal server error.
+// handle the case when the API request gets an error response.
+// e.g. internal server error.
             .suspendOnError {
                 onError(item, message())
             }
-            // handle the case when the API request gets an exception response.
-            // e.g. network connection error.
+// handle the case when the API request gets an exception response.
+// e.g. network connection error.
             .suspendOnException {
                 onError(item, message())
             }
-        }
+    }
 
-        suspend fun delete(
-            id: String, onSuccess: () -> Unit,
-            onError: (String) -> Unit) {
-            dao.delete(id)
-            api.delete(id)
-            // handle the case when the API request gets a success response.
+    suspend fun delete(
+        id: String, onSuccess: () -> Unit, onError: (String) -> Unit
+    ) {
+        dao.delete(id)
+        api.delete(id)
+// handle the case when the API request gets a success response.
             .suspendOnSuccess {
                 data.whatIfNotNull {
                     onSuccess()
                 }
             }
-            // handle the case when the API request gets an error response.
-            // e.g. internal server error.
+// handle the case when the API request gets an error response.
+// e.g. internal server error.
             .suspendOnError {
                 onError(message())
             }
-            // handle the case when the API request gets an exception response.
-            // e.g. network connection error.
+// handle the case when the API request gets an exception response.
+// e.g. network connection error.
             .suspendOnException {
                 onError(message())
             }
-        }
+    }
+
+    suspend fun find(id: String): SetoranSampah? {
+        return dao.find(id)
     }
 }

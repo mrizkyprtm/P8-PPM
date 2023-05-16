@@ -9,7 +9,9 @@ import id.ac.unpas.functionalcompose.repositories.SetoranSampahRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class PengelolaanSampahViewModel @Inject constructor(private val setoranSampahRepository: SetoranSampahRepository) : ViewModel() {
+class PengelolaanSampahViewModel @Inject constructor(
+    private val setoranSampahRepository: SetoranSampahRepository
+) : ViewModel() {
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
     private val _success: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -35,6 +37,26 @@ class PengelolaanSampahViewModel @Inject constructor(private val setoranSampahRe
     ) {
         _isLoading.postValue(true)
         setoranSampahRepository.insert(tanggal, nama, berat, onError = { item, message ->
+            _toast.postValue(message)
+            _isLoading.postValue(false)
+        }, onSuccess = {
+            _isLoading.postValue(false)
+            _success.postValue(true)
+        })
+    }
+
+    suspend fun loadItem(
+        id: String, onSuccess: (SetoranSampah?) -> Unit
+    ) {
+        val item = setoranSampahRepository.find(id)
+        onSuccess(item)
+    }
+
+    suspend fun update(
+        id: String, tanggal: String, nama: String, berat: String
+    ) {
+        _isLoading.postValue(true)
+        setoranSampahRepository.update(id, tanggal, nama, berat, onError = { item, message ->
             _toast.postValue(message)
             _isLoading.postValue(false)
         }, onSuccess = {

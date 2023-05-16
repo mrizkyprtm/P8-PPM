@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
+import id.ac.unpas.functionalcompose.screens.MainScreen
 import id.ac.unpas.functionalcompose.screens.PengelolaanSampahScreen
 import id.ac.unpas.functionalcompose.ui.theme.FunctionalComposeTheme
 
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    PengelolaanSampahScreen()
+                    MainScreen()
                 }
             }
         }
@@ -35,6 +36,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     FunctionalComposeTheme {
-        PengelolaanSampahScreen()
+        MainScreen()
     }
 }
